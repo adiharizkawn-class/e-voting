@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>Dashboard Admin | E-Voting</title>
+    <link rel="stylesheet" href="css/admin.css" />
+    <!-- SCRIPT CHART.JS UNTUK DIAGRAM -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  </head>
+  <body>
+    <!-- LOGIN SCREEN -->
+    <div id="loginScreen" class="login-screen">
+      <div class="login-card">
+        <div class="login-icon">🔐</div>
+        <h2>Admin Dashboard</h2>
+        <p>Masukkan password admin</p>
+        <div class="form-group">
+          <input
+            type="password"
+            id="inputPassword"
+            placeholder="Password"
+            onkeypress="if (event.key === 'Enter') loginAdmin();"
+          />
+        </div>
+        <button class="btn btn-primary btn-full" onclick="loginAdmin()">
+          Masuk
+        </button>
+      </div>
+    </div>
+
+    <!-- DASHBOARD -->
+    <div id="dashboardScreen" style="display: none">
+      <div class="topbar">
+        <h1>📊 Dashboard Admin</h1>
+        <button class="btn btn-small btn-secondary" onclick="logoutAdmin()">
+          Logout
+        </button>
+      </div>
+
+      <div class="stats-grid" id="statsGrid"></div>
+
+      <!-- BAGIAN DIAGRAM -->
+      <div class="section">
+        <h2>📈 Diagram Perolehan Suara</h2>
+        <div
+          class="chart-wrapper"
+          style="
+            background: rgba(255, 255, 255, 0.06);
+            border-radius: 16px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+          "
+        >
+          <div id="chartContainer">
+            <!-- Canvas diagram akan dimuat di sini oleh JS -->
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>⚙️ Kontrol Voting</h2>
+        <div class="control-grid">
+          <div class="control-card">
+            <label>Status Voting</label>
+            <button
+              id="btnToggleVoting"
+              class="btn btn-full"
+              onclick="toggleVoting()"
+            >
+              Loading...
+            </button>
+          </div>
+          <div class="control-card">
+            <label>Judul Voting</label>
+            <input type="text" id="inputTitle" placeholder="Judul voting" />
+            <button
+              class="btn btn-primary btn-full"
+              style="margin-top: 8px"
+              onclick="updateTitle()"
+            >
+              Simpan Judul
+            </button>
+          </div>
+          <div class="control-card">
+            <label>Reset Data</label>
+            <button class="btn btn-danger btn-full" onclick="resetVoting()">
+              🗑️ Reset Semua Suara
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>📋 Suara Terakhir Masuk</h2>
+        <div id="recentVotes" class="recent-votes"></div>
+      </div>
+
+      <div class="section">
+        <h2>👥 Semua Data Pemilih</h2>
+        <button
+          class="btn btn-secondary btn-full"
+          onclick="loadAllVoters()"
+          style="margin-bottom: 12px"
+        >
+          Muat Semua Data Pemilih
+        </button>
+        <div id="allVoters" class="recent-votes"></div>
+      </div>
+
+      <div class="section" style="text-align: center; padding-bottom: 40px">
+        <button class="btn btn-primary" onclick="loadDashboard()">
+          🔄 Refresh Data
+        </button>
+        <p class="note-text" id="lastUpdate"></p>
+      </div>
+    </div>
+
+    <script src="js/admin.js"></script>
+  </body>
+</html>

@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>E-Voting | Pemungutan Suara</title>
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <div id="loadingScreen" class="loading-screen">
+      <div class="loading-spinner"></div>
+      <p>Memuat data...</p>
+    </div>
+
+    <div id="closedScreen" class="screen closed-screen" style="display: none">
+      <div class="closed-icon">🔒</div>
+      <h2>Pemungutan Suara Ditutup</h2>
+      <p>Maaf, pemungutan suara saat ini belum atau sudah tidak dibuka.</p>
+    </div>
+
+    <div id="mainScreen" class="screen" style="display: none">
+      <header class="header">
+        <div class="header-icon">🗳️</div>
+        <h1 id="judulVoting">Pemungutan Suara</h1>
+        <p class="subtitle">Pilih kandidat pilihan Anda</p>
+      </header>
+
+      <section id="voterForm" class="voter-form">
+        <h2>Data Pemilih</h2>
+        <div class="form-group">
+          <label for="inputNama">Nama Lengkap</label>
+          <input
+            type="text"
+            id="inputNama"
+            placeholder="Masukkan nama lengkap"
+            autocomplete="name"
+          />
+        </div>
+        <div class="form-group">
+          <label for="inputKelas">Kelas</label>
+          <!-- CONTOH KELAS SUDAH DIUBAH KE TJKT -->
+          <input type="text" id="inputKelas" placeholder="Contoh: XII TJKT 1" />
+        </div>
+        <button
+          id="btnLanjut"
+          class="btn btn-primary btn-full"
+          onclick="lanjutPilih()"
+        >
+          Lanjut Pilih Kandidat →
+        </button>
+      </section>
+
+      <section
+        id="kandidatSection"
+        class="kandidat-section"
+        style="display: none"
+      >
+        <div class="voter-info-bar" id="voterInfoBar"></div>
+        <h2>Pilih Kandidat</h2>
+        <div id="kandidatList" class="kandidat-list"></div>
+      </section>
+    </div>
+
+    <div id="modalKonfirmasi" class="modal" style="display: none">
+      <div class="modal-content">
+        <div class="modal-icon">⚠️</div>
+        <h3>Konfirmasi Pilihan</h3>
+        <p>Anda yakin memilih:</p>
+        <div id="konfirmasiDetail" class="konfirmasi-detail"></div>
+        <p class="warning-text">
+          Pilihan tidak dapat diubah setelah dikonfirmasi!
+        </p>
+        <div class="modal-buttons">
+          <button class="btn btn-secondary" onclick="tutupModal()">
+            Batal
+          </button>
+          <button class="btn btn-primary" onclick="konfirmasiVote()">
+            Ya, Saya Yakin
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div id="suksesScreen" class="screen sukses-screen" style="display: none">
+      <div class="sukses-icon">✅</div>
+      <h2>Suara Berhasil Disimpan!</h2>
+      <p id="suksesMessage"></p>
+      <div id="suksesDetail" class="sukses-detail"></div>
+      <button class="btn btn-primary btn-full" onclick="location.reload()">
+        Selesai
+      </button>
+      <p class="note-text">Suara Anda sudah tercatat di dashboard admin</p>
+    </div>
+
+    <div id="sudahVoteScreen" class="screen" style="display: none">
+      <div class="sukses-icon">ℹ️</div>
+      <h2>Anda Sudah Memberikan Suara</h2>
+      <p>Nama dan kelas ini sudah terdaftar dalam pemungutan suara.</p>
+    </div>
+
+    <script src="js/app.js"></script>
+  </body>
+</html>
