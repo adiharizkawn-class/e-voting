@@ -1,56 +1,98 @@
-const admin = require("firebase-admin");
+const fs = require("fs");
+const path = require("path");
+const { initializeApp, cert, getApps } = require("firebase-admin/app");
+const { getFirestore } = require("firebase-admin/firestore");
 
-// Inisialisasi Firebase Admin
-if (!admin.apps.length) {
-  admin.initializeApp({
-    credential: admin.credential.cert({
-      projectId: process.env.FIREBASE_PROJECT_ID,
-      clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-      privateKey: process.env.FIREBASE_PRIVATE_KEY
-        ? process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, "\n")
-        : undefined,
-    }),
+// Fungsi Pembersih String
+function clean(val) {
+  if (!val) return "";
+  let res = String(val).trim();
+  if (
+    (res.startsWith('"') && res.endsWith('"')) ||
+    (res.startsWith("'") && res.endsWith("'"))
+  ) {
+    res = res.slice(1, -1);
+  }
+  return res;
+}
+
+// Fungsi Ambil Kunci (Otomatis deteksi Laptop vs Vercel)
+function getCredentials() {
+  const jsonPath = path.join(__dirname, "serviceAccount.json");
+
+  // 1. Jika di laptop ada file serviceAccount.json, pakai file itu
+  if (fs.existsSync(jsonPath)) {
+    return cert(JSON.parse(fs.readFileSync(jsonPath, "utf8")));
+  }
+
+  // 2. Jika di Vercel, pakai Environment Variables
+  const projectId = clean(process.env.FIREBASE_PROJECT_ID);
+  const clientEmail = clean(process.env.FIREBASE_CLIENT_EMAIL);
+  const privateKey = clean(process.env.FIREBASE_PRIVATE_KEY).replace(
+    /\\n/g,
+    "\n",
+  );
+
+  return cert({
+    projectId,
+    clientEmail,
+    privateKey,
   });
 }
 
-const firestore = admin.firestore();
+// Inisialisasi Firebase Anti-Crash
+if (getApps().length === 0) {
+  try {
+    initializeApp({
+      credential: getCredentials(),
+    });
+  } catch (err) {
+    console.log("⚠️ Firebase Warning:", err.message);
+  }
+}
+
+const firestore = getFirestore();
 
 // Seed data awal jika database masih kosong
 async function initDatabase() {
-  const kandidatRef = firestore.collection("kandidat");
-  const snapshot = await kandidatRef.get();
-  if (snapshot.empty) {
-    const defaultKandidat = [
-      {
-        id: 1,
-        nama: "Ahmad Fauzi",
-        foto: "kandidat1.jpg",
-        deskripsi: "Visi: Transparan dan inovatif",
-        nomor_urut: 1,
-      },
-      {
-        id: 2,
-        nama: "Siti Nurhaliza",
-        foto: "kandidat2.jpg",
-        deskripsi: "Visi: Mengutamakan kebersamaan",
-        nomor_urut: 2,
-      },
-      {
-        id: 3,
-        nama: "Budi Santoso",
-        foto: "kandidat3.jpg",
-        deskripsi: "Visi: Kreativitas dan kolaborasi",
-        nomor_urut: 3,
-      },
-    ];
-    for (const k of defaultKandidat) {
-      await kandidatRef.doc(k.id.toString()).set(k);
+  try {
+    const kandidatRef = firestore.collection("kandidat");
+    const snapshot = await kandidatRef.get();
+    if (snapshot.empty) {
+      const defaultKandidat = [
+        {
+          id: 1,
+          nama: "Ahmad Fauzi",
+          foto: "kandidat1.jpg",
+          deskripsi: "Visi: Transparan dan inovatif",
+          nomor_urut: 1,
+        },
+        {
+          id: 2,
+          nama: "Siti Nurhaliza",
+          foto: "kandidat2.jpg",
+          deskripsi: "Visi: Mengutamakan kebersamaan",
+          nomor_urut: 2,
+        },
+        {
+          id: 3,
+          nama: "Budi Santoso",
+          foto: "kandidat3.jpg",
+          deskripsi: "Visi: Kreativitas dan kolaborasi",
+          nomor_urut: 3,
+        },
+      ];
+      for (const k of defaultKandidat) {
+        await kandidatRef.doc(k.id.toString()).set(k);
+      }
+      await firestore.collection("settings").doc("config").set({
+        voting_open: "true",
+        judul_voting: "Pemilihan Ketua",
+      });
+      console.log("✅ Default Data Firebase Berhasil Dibuat!");
     }
-    await firestore.collection("settings").doc("config").set({
-      voting_open: "true",
-      judul_voting: "Pemilihan Ketua",
-    });
-    console.log("✅ Default Data Firebase Berhasil Dibuat!");
+  } catch (err) {
+    console.log("Info Firebase:", err.message);
   }
 }
 initDatabase().catch(console.error);
